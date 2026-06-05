@@ -1,0 +1,30 @@
+{
+  "name": "HalfHalf",
+  "short_name": "HalfHalf",
+  "description": "Nordic Minimalist 60/40 Co-Pay Splitter with cap limit tracking.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#faf9f6",
+  "theme_color": "#4a6b53",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

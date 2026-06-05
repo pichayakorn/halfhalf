@@ -1,0 +1,25 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local environment variables
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Build/Dependency directories (just in case they are added later)
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
