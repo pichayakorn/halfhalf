@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>HalfHalf</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,9 @@
   <!-- Favicon / App Icon -->
   <link rel="icon" type="image/png" href="icon.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4a6b53">
+  <meta name="theme-color" content="#faf9f6">
+  <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: dark)">
   <!-- iOS PWA support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -48,7 +50,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 60px 16px 24px 16px;
+      padding: calc(env(safe-area-inset-top, 24px) + 36px) 16px 24px 16px;
     }
 
     .app-container {
