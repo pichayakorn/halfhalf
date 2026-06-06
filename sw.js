@@ -1,4 +1,4 @@
-const CACHE_NAME = 'copay-splitter-cache-v6';
+const CACHE_NAME = 'copay-splitter-cache-1.0.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
