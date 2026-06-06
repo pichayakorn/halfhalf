@@ -9,31 +9,31 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Favicon / App Icon -->
-  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#faf9f6">
-  <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f8fafc">
+  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: dark)">
   <!-- iOS PWA support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="HalfHalf">
-  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.svg">
   <!-- Lucide Icons (CDN) -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
-      --bg-color: #faf9f6;
+      --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --card-border: #e8e6e0;
-      --text-main: #2b2927;
-      --text-muted: #787570;
-      --gov-color: #4a6b53; /* Sage Green */
-      --gov-bg-light: #f0f4f1;
-      --user-color: #b85d43; /* Terracotta Rust */
-      --user-bg-light: #faf0ed;
-      --accent: #2b2927;
-      --input-bg: #f5f4f0;
+      --card-border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --gov-color: #0284c7; /* Light Sky Blue */
+      --gov-bg-light: #f0f9ff;
+      --user-color: #d97706; /* Warm Amber/Orange */
+      --user-bg-light: #fffbeb;
+      --accent: #0284c7;
+      --input-bg: #f1f5f9;
     }
 
     * {
@@ -60,7 +60,7 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 36px 30px;
-      box-shadow: 0 4px 24px rgba(43, 41, 39, 0.04);
+      box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
       position: relative;
       overflow: hidden;
     }
@@ -74,7 +74,6 @@
       font-family: 'Instrument Serif', serif;
       font-size: 2.5rem;
       font-weight: 400;
-      font-style: italic;
       color: var(--text-main);
       line-height: 1.1;
     }
@@ -95,7 +94,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: #faf9f6;
+      background-color: var(--input-bg);
     }
 
     .bal-left {
@@ -131,7 +130,7 @@
       color: var(--gov-color);
       background: transparent;
       border: none;
-      border-bottom: 1px dashed rgba(74, 107, 83, 0.4);
+      border-bottom: 1px dashed rgba(2, 132, 199, 0.4);
       outline: none;
       width: 75px;
       font-family: inherit;
@@ -285,7 +284,7 @@
     }
 
     .price-input::placeholder {
-      color: #d1cfc7;
+      color: #cbd5e1;
     }
 
     .price-input::-webkit-outer-spin-button,
@@ -338,12 +337,12 @@
 
     .result-box.gov {
       background-color: var(--gov-bg-light);
-      border: 1px solid rgba(74, 107, 83, 0.1);
+      border: 1px solid rgba(2, 132, 199, 0.1);
     }
 
     .result-box.user {
       background-color: var(--user-bg-light);
-      border: 1px solid rgba(184, 93, 67, 0.1);
+      border: 1px solid rgba(217, 119, 6, 0.1);
     }
 
     .result-label {
@@ -454,7 +453,7 @@
     }
 
     .btn-primary:hover {
-      background: #403d39;
+      background: #1e293b;
     }
 
     .btn-secondary {
