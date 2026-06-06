@@ -915,6 +915,19 @@
     // Initialize Lucide Icons
     lucide.createIcons();
 
+    // iOS Safari Keyboard Scroll Bug Fix
+    // When inputs lose focus, force the window to scroll back to top (0,0)
+    // to correct the layout shift caused by the virtual keyboard.
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (/Mac/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+    if (isIOS) {
+      document.addEventListener('focusout', (e) => {
+        if (e.target.tagName === 'INPUT') {
+          window.scrollTo(0, 0);
+        }
+      });
+    }
+
     // App State
     let logs = JSON.parse(localStorage.getItem('halfhalf_logs')) || [];
     const ratioGov = 60; // Fixed 60%
