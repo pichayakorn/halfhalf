@@ -54,6 +54,40 @@
       overflow: hidden;
     }
 
+    /* Variant Switcher styling */
+    .variant-switcher {
+      display: flex;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 9999px;
+      padding: 4px;
+      gap: 2px;
+      margin-bottom: 24px;
+    }
+
+    .switcher-tab {
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 6px 4px;
+      border-radius: 9999px;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .switcher-tab:hover {
+      color: var(--text-main);
+    }
+
+    .switcher-tab.active {
+      background: var(--card-bg);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      font-weight: 600;
+    }
+
     .header {
       text-align: center;
       margin-bottom: 24px;
@@ -626,6 +660,15 @@
     <button class="hamburger-btn" id="drawer-open-btn" title="Saved Splits">
       <i data-lucide="menu" style="width: 16px; height: 16px;"></i>
     </button>
+
+    <!-- Design Variant Switcher -->
+    <div class="variant-switcher">
+      <a href="index.html" class="switcher-tab">Original</a>
+      <a href="variant-slate.html" class="switcher-tab active">Slate</a>
+      <a href="variant-midnight.html" class="switcher-tab">Midnight</a>
+      <a href="variant-glass.html" class="switcher-tab">Glass</a>
+      <a href="variant-brutal.html" class="switcher-tab">Brutal</a>
+    </div>
 
     <div class="header">
       <h1>HalfHalf</h1>
