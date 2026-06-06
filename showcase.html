@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HalfHalf — Design Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg: #09090b;
+      --panel: #18181b;
+      --border: #27272a;
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 30px 20px;
+    }
+
+    .showcase-header {
+      max-width: 1800px;
+      width: 100%;
+      margin: 0 auto 30px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title-area h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .title-area p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .action-bar {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #27272a;
+      border-color: #3f3f46;
+    }
+
+    .grid-container {
+      max-width: 1800px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+      flex: 1;
+    }
+
+    .frame-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .frame-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .frame-title {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .frame-title span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .original-dot { background-color: #0284c7; }
+    .slate-dot { background-color: #0891b2; }
+    .midnight-dot { background-color: #00f2fe; }
+    .glass-dot { background-color: #0d9488; }
+
+    .frame-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      color: var(--text);
+    }
+
+    .iframe-wrapper {
+      flex: 1;
+      height: 720px;
+      position: relative;
+      background: #000;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="showcase-header">
+    <div class="title-area">
+      <h1>HalfHalf Design Showcase</h1>
+      <p>Compare all 4 layout variants (Original + 3 Redesigns) side-by-side in real time</p>
+    </div>
+    <div class="action-bar">
+      <a href="index.html" class="btn" style="text-decoration: none;"><i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> Return to App</a>
+      <button class="btn" onclick="refreshAll()"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i> Refresh All</button>
+    </div>
+  </div>
+
+  <div class="grid-container">
+    <!-- Frame 1: Original -->
+    <div class="frame-card">
+      <div class="frame-header">
+        <div class="frame-title">
+          <span class="original-dot"></span> Original Classic
+        </div>
+        <div class="frame-actions">
+          <button class="icon-btn" onclick="refreshFrame('iframe-original')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
+          <a href="index.html" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
+        </div>
+      </div>
+      <div class="iframe-wrapper">
+        <iframe id="iframe-original" src="index.html"></iframe>
+      </div>
+    </div>
+
+    <!-- Frame 2: Slate -->
+    <div class="frame-card">
+      <div class="frame-header">
+        <div class="frame-title">
+          <span class="slate-dot"></span> Slate Variant
+        </div>
+        <div class="frame-actions">
+          <button class="icon-btn" onclick="refreshFrame('iframe-slate')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
+          <a href="variant-slate.html" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
+        </div>
+      </div>
+      <div class="iframe-wrapper">
+        <iframe id="iframe-slate" src="variant-slate.html"></iframe>
+      </div>
+    </div>
+
+    <!-- Frame 3: Midnight -->
+    <div class="frame-card">
+      <div class="frame-header">
+        <div class="frame-title">
+          <span class="midnight-dot"></span> Midnight Variant
+        </div>
+        <div class="frame-actions">
+          <button class="icon-btn" onclick="refreshFrame('iframe-midnight')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
+          <a href="variant-midnight.html" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
+        </div>
+      </div>
+      <div class="iframe-wrapper">
+        <iframe id="iframe-midnight" src="variant-midnight.html"></iframe>
+      </div>
+    </div>
+
+    <!-- Frame 4: Glass -->
+    <div class="frame-card">
+      <div class="frame-header">
+        <div class="frame-title">
+          <span class="glass-dot"></span> Glass Variant
+        </div>
+        <div class="frame-actions">
+          <button class="icon-btn" onclick="refreshFrame('iframe-glass')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
+          <a href="variant-glass.html" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
+        </div>
+      </div>
+      <div class="iframe-wrapper">
+        <iframe id="iframe-glass" src="variant-glass.html"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function refreshFrame(id) {
+      const iframe = document.getElementById(id);
+      iframe.src = iframe.src;
+    }
+
+    function refreshAll() {
+      refreshFrame('iframe-original');
+      refreshFrame('iframe-slate');
+      refreshFrame('iframe-midnight');
+      refreshFrame('iframe-glass');
+    }
+  </script>
+</body>
+</html>
