@@ -69,7 +69,10 @@
     }
 
     [data-theme="dark"] .app-container {
-      border-radius: 20px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.05);
     }
 
@@ -788,6 +791,7 @@
 
       .app-container {
         height: 100vh;
+        height: 100dvh;
         height: -webkit-fill-available;
         border: none;
         border-radius: 0;
@@ -830,6 +834,45 @@
         border-radius: 0;
         border-left: none;
         padding: 24px 20px;
+      }
+
+      /* Compact styling for shorter screens in web browser viewports */
+      @media (max-height: 740px) {
+        .header {
+          margin-top: 4px;
+          margin-bottom: 8px;
+        }
+        .balance-box {
+          margin-bottom: 10px;
+          padding: 8px 12px;
+        }
+        .input-section {
+          margin-bottom: 10px;
+        }
+        .visual-split {
+          margin-bottom: 10px;
+        }
+        .results-grid {
+          margin-bottom: 20px;
+          gap: 8px;
+        }
+        .numpad {
+          margin-top: 8px;
+          margin-bottom: 8px;
+          gap: 6px;
+        }
+        .numpad-btn {
+          padding: 8px 0;
+          font-size: 1.15rem;
+          border-radius: 8px;
+        }
+        .actions {
+          margin-top: 4px;
+        }
+        .btn-primary, .btn-secondary {
+          padding: 10px 16px;
+          font-size: 0.8rem;
+        }
       }
     }
 
