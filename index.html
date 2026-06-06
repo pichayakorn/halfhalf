@@ -7,34 +7,73 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    // Theme initialization (prevents theme flash)
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryTheme = urlParams.get('theme');
+      const savedTheme = localStorage.getItem('halfhalf_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (queryTheme === 'dark' || (queryTheme !== 'light' && (savedTheme === 'dark' || (!savedTheme && prefersDark)))) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
   <!-- Favicon / App Icon -->
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f8fafc">
-  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f5f5f7">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
   <!-- iOS PWA support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="HalfHalf">
   <link rel="apple-touch-icon" href="icon-solid.png">
   <!-- Lucide Icons (CDN) -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
-      --bg-color: #f8fafc;
+      --bg-color: #f5f5f7; /* Softer, warmer light gray background */
       --card-bg: #ffffff;
-      --card-border: #e2e8f0;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --gov-color: #0284c7; /* Light Sky Blue */
-      --gov-bg-light: #f0f9ff;
+      --card-border: #e5e7eb; /* Softer border */
+      --text-main: #1d1d1f; /* Softer, less harsh main text */
+      --text-muted: #86868b; /* Softer muted text */
+      --gov-color: #0d9488; /* Teal from Glass variant */
+      --gov-bg-light: rgba(13, 148, 136, 0.05); /* Softer government block background */
       --user-color: #d97706; /* Warm Amber/Orange */
-      --user-bg-light: #fffbeb;
-      --accent: #0284c7;
-      --input-bg: #f1f5f9;
+      --user-bg-light: rgba(217, 119, 6, 0.05); /* Softer user block background */
+      --accent: #0d9488;
+      --input-bg: #f0f2f5; /* Softer inputs background */
+      --gov-border: rgba(13, 148, 136, 0.1);
+      --user-border: rgba(217, 119, 6, 0.1);
+      --gov-border-dashed: rgba(13, 148, 136, 0.3);
     }
+
+    [data-theme="dark"] {
+      --bg-color: #0b0f19; /* Softer modern deep slate */
+      --card-bg: #151d30; /* Premium card slate blue */
+      --card-border: #243049; /* Softer border */
+      --text-main: #f8fafc; /* Crisp readable text */
+      --text-muted: #94a3b8; /* Lighter slate muted text for contrast */
+      --gov-color: #00f2fe;
+      --gov-bg-light: rgba(0, 242, 254, 0.1);
+      --user-color: #ff8c00;
+      --user-bg-light: rgba(255, 140, 0, 0.1);
+      --accent: #00f2fe;
+      --input-bg: #1e293b;
+      --gov-border: rgba(0, 242, 254, 0.1);
+      --user-border: rgba(255, 140, 0, 0.1);
+      --gov-border-dashed: rgba(0, 242, 254, 0.4);
+    }
+
+    [data-theme="dark"] .app-container {
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+
+
 
     * {
       box-sizing: border-box;
@@ -60,7 +99,7 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 36px 30px;
-      box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04); /* Softer, premium drop shadow */
       position: relative;
       overflow: hidden;
     }
@@ -68,24 +107,22 @@
 
 
     .header {
-      text-align: left;
       margin-bottom: 24px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
     }
 
     .header h1 {
       font-family: 'Inter', sans-serif;
-      font-size: 2.2rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--text-main);
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-
-    .header p {
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      margin-top: 6px;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
     }
 
     /* Subsidy Balance Box */
@@ -133,7 +170,7 @@
       color: var(--gov-color);
       background: transparent;
       border: none;
-      border-bottom: 1px dashed rgba(2, 132, 199, 0.4);
+      border-bottom: 1px dashed var(--gov-border-dashed);
       outline: none;
       width: 75px;
       font-family: inherit;
@@ -340,12 +377,12 @@
 
     .result-box.gov {
       background-color: var(--gov-bg-light);
-      border: 1px solid rgba(2, 132, 199, 0.1);
+      border: 1px solid var(--gov-border);
     }
 
     .result-box.user {
       background-color: var(--user-bg-light);
-      border: 1px solid rgba(217, 119, 6, 0.1);
+      border: 1px solid var(--user-border);
     }
 
     .result-label {
@@ -608,27 +645,39 @@
       color: var(--user-color);
     }
 
-    .hamburger-btn {
-      position: absolute;
-      top: 36px;
-      right: 30px;
+    .hamburger-btn,
+    .theme-toggle-btn {
       background: transparent;
       border: 1px solid var(--card-border);
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text-muted);
       cursor: pointer;
-      z-index: 10;
       transition: all 0.2s ease;
     }
 
-    .hamburger-btn:hover {
+    .hamburger-btn:hover,
+    .theme-toggle-btn:hover {
       border-color: var(--text-main);
       color: var(--text-main);
+    }
+
+    /* Theme Icon Toggling */
+    [data-theme="dark"] .theme-icon-light {
+      display: block !important;
+    }
+    [data-theme="dark"] .theme-icon-dark {
+      display: none !important;
+    }
+    .theme-icon-light {
+      display: none;
+    }
+    .theme-icon-dark {
+      display: block;
     }
 
     .log-list::-webkit-scrollbar {
@@ -658,17 +707,16 @@
     .log-left {
       display: flex;
       flex-direction: column;
-      gap: 3px;
-    }
-
-    .log-price-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      gap: 4px;
+      min-width: 0;
+      flex: 1;
     }
 
     .log-orig-price {
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--text-main);
+      white-space: nowrap;
     }
 
     .log-note {
@@ -678,6 +726,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: 2px;
     }
 
     .log-splits {
@@ -685,6 +734,7 @@
       color: var(--text-muted);
       display: flex;
       gap: 8px;
+      white-space: nowrap;
     }
 
     .log-splits span:first-child { color: var(--gov-color); font-weight: 500; }
@@ -699,6 +749,7 @@
     .log-date {
       font-size: 0.7rem;
       color: var(--text-muted);
+      white-space: nowrap;
     }
 
     .log-delete {
@@ -743,18 +794,9 @@
         overflow: hidden;
       }
 
-      .hamburger-btn {
-        top: 20px;
-        right: 20px;
-      }
-
       .header {
         margin-top: 12px;
         margin-bottom: 16px;
-      }
-
-      .header h1 {
-        font-size: 2.2rem;
       }
 
       .balance-box {
@@ -786,6 +828,61 @@
       }
     }
 
+    /* Embedded Numpad Styles */
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .numpad-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      font-size: 1.35rem;
+      font-weight: 600;
+      padding: 12px 0;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .numpad-btn:active {
+      background: var(--card-border);
+      transform: scale(0.96);
+    }
+
+    @media (hover: hover) {
+      .numpad-btn:hover {
+        background: var(--input-bg);
+      }
+    }
+
+    /* Highlight active field border */
+    .price-input-wrapper.active-field {
+      border-color: var(--gov-color) !important;
+    }
+    .bal-val-input.active-field {
+      border-bottom-color: var(--gov-color) !important;
+    }
+    .result-val-wrapper.active-field {
+      border-bottom-color: var(--gov-color) !important;
+    }
+    
+    /* Result inputs active border helper */
+    .result-val-wrapper {
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s ease;
+    }
   </style>
 </head>
 <body>
@@ -793,15 +890,19 @@
 
 
   <div class="app-container">
-    <button class="hamburger-btn" id="drawer-open-btn" title="Saved Splits">
-      <i data-lucide="menu" style="width: 16px; height: 16px;"></i>
-    </button>
-
-
-
     <div class="header">
-      <h1>HalfHalf</h1>
-      <p>Clean, dual-ratio expenses with cap limits</p>
+      <div class="header-top">
+        <h1>HalfHalf</h1>
+        <div style="display: flex; gap: 8px;">
+          <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle Theme">
+            <i data-lucide="sun" class="theme-icon-light" style="width: 16px; height: 16px;"></i>
+            <i data-lucide="moon" class="theme-icon-dark" style="width: 16px; height: 16px;"></i>
+          </button>
+          <button class="hamburger-btn" id="drawer-open-btn" title="Saved Splits">
+            <i data-lucide="menu" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Subsidy Tracker -->
@@ -810,7 +911,7 @@
         <span class="bal-title">Available Subsidy</span>
         <div class="bal-val-wrapper">
           <span class="bal-currency">฿</span>
-          <input type="number" id="remaining-subsidy-input" class="bal-val-input" value="200.00" min="0" step="any">
+          <input type="text" id="remaining-subsidy-input" class="bal-val-input" value="200.00" inputmode="none">
         </div>
       </div>
       <div class="bal-limit">
@@ -825,13 +926,9 @@
         <label class="input-label" for="original-price">Amount to Split (60/40 Ratio)</label>
         <div class="price-input-wrapper">
           <span class="currency-symbol">฿</span>
-          <input type="number" id="original-price" class="price-input" placeholder="0.00" min="0" step="any" autofocus>
+          <input type="text" id="original-price" class="price-input" placeholder="0.00" autofocus inputmode="none">
         </div>
       </div>
-
-      <input type="text" id="calc-note" class="note-input" placeholder="Name this calculation (optional)">
-
-
     </div>
 
     <!-- Visual Divider -->
@@ -844,21 +941,39 @@
     <div class="results-grid">
       <div class="result-box gov">
         <div class="result-label">Gov Support (60%)</div>
-        <div class="result-val-wrapper gov">
+        <div class="result-val-wrapper gov" id="gov-val-wrapper">
           <span>฿</span>
-          <input type="number" id="val-gov" class="result-input gov" placeholder="0.00" min="0" step="any">
+          <input type="text" id="val-gov" class="result-input gov" placeholder="0.00" inputmode="none">
         </div>
       </div>
       <div class="result-box user">
         <div class="result-label">Your Share (40%)</div>
-        <div class="result-val-wrapper user">
+        <div class="result-val-wrapper user" id="user-val-wrapper">
           <span>฿</span>
-          <input type="number" id="val-user" class="result-input user" placeholder="0.00" min="0" step="any">
+          <input type="text" id="val-user" class="result-input user" placeholder="0.00" inputmode="none">
         </div>
       </div>
       <div class="cap-alert" id="cap-alert" style="display: none;">
         * Government cap reached! You pay the rest on top.
       </div>
+    </div>
+
+    <!-- Embedded Numpad -->
+    <div class="numpad">
+      <button class="numpad-btn" data-val="1">1</button>
+      <button class="numpad-btn" data-val="2">2</button>
+      <button class="numpad-btn" data-val="3">3</button>
+      <button class="numpad-btn" data-val="4">4</button>
+      <button class="numpad-btn" data-val="5">5</button>
+      <button class="numpad-btn" data-val="6">6</button>
+      <button class="numpad-btn" data-val="7">7</button>
+      <button class="numpad-btn" data-val="8">8</button>
+      <button class="numpad-btn" data-val="9">9</button>
+      <button class="numpad-btn" data-val=".">.</button>
+      <button class="numpad-btn" data-val="0">0</button>
+      <button class="numpad-btn delete-btn" data-val="backspace">
+        <i data-lucide="delete" style="width: 18px; height: 18px;"></i>
+      </button>
     </div>
 
     <!-- Actions -->
@@ -872,10 +987,7 @@
       </button>
     </div>
 
-    <!-- Footer / Credits -->
-    <div class="app-footer" style="text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--card-border);">
-      Made by <a href="https://github.com/pichayakorn" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); text-decoration: none; font-weight: 500;">pichayakorn</a>
-    </div>
+
 
     <!-- History Drawer (Slides in from the right) -->
     <div class="history-drawer" id="history-drawer">
@@ -913,6 +1025,11 @@
           No records yet. Enter a value and save it.
         </div>
       </div>
+
+      <!-- Footer / Credits -->
+      <div class="app-footer" style="text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: auto; padding-top: 12px; border-top: 1px solid var(--card-border);">
+        Made by <a href="https://github.com/pichayakorn" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); text-decoration: none; font-weight: 500;">pichayakorn</a>
+      </div>
     </div>
   </div>
 
@@ -942,7 +1059,6 @@
 
     // Elements
     const priceInput = document.getElementById('original-price');
-    const calcNote = document.getElementById('calc-note');
     const valGov = document.getElementById('val-gov');
     const valUser = document.getElementById('val-user');
     const historyList = document.getElementById('history-list');
@@ -1088,13 +1204,10 @@
       return '฿' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-
-
     function resetCalculator() {
       priceInput.value = '';
       valGov.value = '';
       valUser.value = '';
-      calcNote.value = '';
       capAlert.style.display = 'none';
       priceInput.focus();
     }
@@ -1105,7 +1218,7 @@
 
       const govShare = parseFloat(valGov.value) || 0;
       const userShare = parseFloat(valUser.value) || 0;
-      const note = calcNote.value.trim();
+      const note = '';
 
       const logEntry = {
         id: Date.now(),
@@ -1127,6 +1240,85 @@
       // Auto open history drawer
       historyDrawer.classList.add('open');
     }
+
+    // Numpad Logic
+    let activeInput = priceInput;
+
+    const numericInputs = [
+      { input: priceInput, wrapper: document.querySelector('.price-input-wrapper') },
+      { input: remainingSubsidyInput, wrapper: remainingSubsidyInput },
+      { input: valGov, wrapper: document.getElementById('gov-val-wrapper') },
+      { input: valUser, wrapper: document.getElementById('user-val-wrapper') }
+    ];
+
+    numericInputs.forEach(item => {
+      // Focus tracking
+      item.input.addEventListener('focus', () => {
+        activeInput = item.input;
+        numericInputs.forEach(x => x.wrapper.classList.remove('active-field'));
+        item.wrapper.classList.add('active-field');
+      });
+      item.input.addEventListener('click', () => {
+        activeInput = item.input;
+        numericInputs.forEach(x => x.wrapper.classList.remove('active-field'));
+        item.wrapper.classList.add('active-field');
+      });
+
+      // Desktop keyboard validation to prevent letters
+      item.input.addEventListener('keydown', (e) => {
+        if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+            (e.keyCode === 67 && (e.ctrlKey === true || e.metaKey === true)) ||
+            (e.keyCode === 86 && (e.ctrlKey === true || e.metaKey === true)) ||
+            (e.keyCode === 88 && (e.ctrlKey === true || e.metaKey === true)) ||
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+          if ((e.keyCode === 190 || e.keyCode === 110) && item.input.value.includes('.')) {
+            e.preventDefault();
+          }
+          return;
+        }
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+          e.preventDefault();
+        }
+      });
+    });
+
+    // Numpad key interactions
+    document.querySelectorAll('.numpad-btn').forEach(btn => {
+      btn.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Keep input focused
+        if (!activeInput) return;
+
+        const val = btn.getAttribute('data-val');
+        const currentVal = activeInput.value;
+
+        if (val === 'backspace') {
+          if (currentVal.length > 0) {
+            activeInput.value = currentVal.slice(0, -1);
+          }
+        } else if (val === '.') {
+          if (!currentVal.includes('.')) {
+            activeInput.value = currentVal === '' ? '0.' : currentVal + '.';
+          }
+        } else {
+          if (currentVal === '0') {
+            activeInput.value = val;
+          } else {
+            activeInput.value = currentVal + val;
+          }
+        }
+
+        activeInput.dispatchEvent(new Event('input'));
+      });
+    });
+
+    // Set active field outline on load
+    priceInput.focus();
+    document.querySelector('.price-input-wrapper').classList.add('active-field');
+
+    // Initialize trackers
+    updateTrackers();
+    renderHistory();
 
     function deleteLog(id) {
       logs = logs.filter(log => log.id !== id);
@@ -1176,12 +1368,10 @@
       historyList.innerHTML = filtered.map(log => `
         <div class="log-item">
           <div class="log-left">
-            <div class="log-price-row">
-              <span class="log-orig-price">${formatCurrency(log.price)}</span>
-              <span class="log-splits">
-                <span>Gov (${log.ratioGov}%): ${formatCurrency(log.govShare)}</span>
-                <span>You (${log.ratioUser}%): ${formatCurrency(log.userShare)}</span>
-              </span>
+            <span class="log-orig-price">${formatCurrency(log.price)}</span>
+            <div class="log-splits">
+              <span>Gov (${log.ratioGov}%): ${formatCurrency(log.govShare)}</span>
+              <span>You (${log.ratioUser}%): ${formatCurrency(log.userShare)}</span>
             </div>
             ${log.note ? `<div class="log-note">${escapeHTML(log.note)}</div>` : ''}
           </div>
@@ -1223,6 +1413,33 @@
     // Initialize trackers
     updateTrackers();
     renderHistory();
+
+    // Theme toggle interaction
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    
+    function initThemeColor() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const color = isDark ? '#0b0f19' : '#f5f5f7';
+      document.querySelectorAll('meta[name="theme-color"]').forEach(meta => {
+        meta.setAttribute('content', color);
+      });
+    }
+    
+    initThemeColor();
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          document.documentElement.removeAttribute('data-theme');
+          localStorage.setItem('halfhalf_theme', 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('halfhalf_theme', 'dark');
+        }
+        initThemeColor();
+      });
+    }
 
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {

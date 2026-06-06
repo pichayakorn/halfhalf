@@ -83,23 +83,26 @@
     }
 
     .grid-container {
-      max-width: 1800px;
+      max-width: 1200px;
       width: 100%;
       margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      gap: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
       flex: 1;
     }
 
     .frame-card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 24px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 390px;
     }
 
     .frame-header {
@@ -126,10 +129,8 @@
       height: 8px;
       border-radius: 50%;
     }
-    .original-dot { background-color: #0284c7; }
-    .slate-dot { background-color: #0891b2; }
-    .midnight-dot { background-color: #00f2fe; }
-    .glass-dot { background-color: #0d9488; }
+    .light-dot { background-color: #0d9488; }
+    .dark-dot { background-color: #00f2fe; }
 
     .frame-actions {
       display: flex;
@@ -152,7 +153,7 @@
 
     .iframe-wrapper {
       flex: 1;
-      height: 720px;
+      height: 820px;
       position: relative;
       background: #000;
     }
@@ -175,7 +176,7 @@
   <div class="showcase-header">
     <div class="title-area">
       <h1>HalfHalf Design Showcase</h1>
-      <p>Compare all 4 layout variants (Original + 3 Redesigns) side-by-side in real time</p>
+      <p>Compare both light and dark themes side-by-side in real time</p>
     </div>
     <div class="action-bar">
       <a href="index.html" class="btn" style="text-decoration: none;"><i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> Return to App</a>
@@ -184,67 +185,35 @@
   </div>
 
   <div class="grid-container">
-    <!-- Frame 1: Original -->
+    <!-- Frame 1: Original Light -->
     <div class="frame-card">
       <div class="frame-header">
         <div class="frame-title">
-          <span class="original-dot"></span> Original Classic
+          <span class="light-dot"></span> Original Light Theme
         </div>
         <div class="frame-actions">
-          <button class="icon-btn" onclick="refreshFrame('iframe-original')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
-          <a href="index.html" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
+          <button class="icon-btn" onclick="refreshFrame('iframe-light')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
+          <a href="index.html?theme=light" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
         </div>
       </div>
       <div class="iframe-wrapper">
-        <iframe id="iframe-original" src="index.html"></iframe>
+        <iframe id="iframe-light" src="index.html?theme=light"></iframe>
       </div>
     </div>
 
-    <!-- Frame 2: Slate -->
+    <!-- Frame 2: Original Dark -->
     <div class="frame-card">
       <div class="frame-header">
         <div class="frame-title">
-          <span class="slate-dot"></span> Slate Variant
+          <span class="dark-dot"></span> Original Dark Theme
         </div>
         <div class="frame-actions">
-          <button class="icon-btn" onclick="refreshFrame('iframe-slate')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
-          <a href="variant-slate.html" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
+          <button class="icon-btn" onclick="refreshFrame('iframe-dark')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
+          <a href="index.html?theme=dark" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
         </div>
       </div>
       <div class="iframe-wrapper">
-        <iframe id="iframe-slate" src="variant-slate.html"></iframe>
-      </div>
-    </div>
-
-    <!-- Frame 3: Midnight -->
-    <div class="frame-card">
-      <div class="frame-header">
-        <div class="frame-title">
-          <span class="midnight-dot"></span> Midnight Variant
-        </div>
-        <div class="frame-actions">
-          <button class="icon-btn" onclick="refreshFrame('iframe-midnight')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
-          <a href="variant-midnight.html" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
-        </div>
-      </div>
-      <div class="iframe-wrapper">
-        <iframe id="iframe-midnight" src="variant-midnight.html"></iframe>
-      </div>
-    </div>
-
-    <!-- Frame 4: Glass -->
-    <div class="frame-card">
-      <div class="frame-header">
-        <div class="frame-title">
-          <span class="glass-dot"></span> Glass Variant
-        </div>
-        <div class="frame-actions">
-          <button class="icon-btn" onclick="refreshFrame('iframe-glass')" title="Reload"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i></button>
-          <a href="variant-glass.html" target="_blank" class="icon-btn" title="Open in New Tab"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i></a>
-        </div>
-      </div>
-      <div class="iframe-wrapper">
-        <iframe id="iframe-glass" src="variant-glass.html"></iframe>
+        <iframe id="iframe-dark" src="index.html?theme=dark"></iframe>
       </div>
     </div>
   </div>
@@ -258,10 +227,8 @@
     }
 
     function refreshAll() {
-      refreshFrame('iframe-original');
-      refreshFrame('iframe-slate');
-      refreshFrame('iframe-midnight');
-      refreshFrame('iframe-glass');
+      refreshFrame('iframe-light');
+      refreshFrame('iframe-dark');
     }
   </script>
 </body>
