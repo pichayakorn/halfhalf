@@ -366,7 +366,8 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 28px; /* Slightly larger margin to accommodate absolute cap-alert */
+      position: relative;
     }
 
     .result-box {
@@ -437,12 +438,16 @@
     }
 
     .cap-alert {
-      grid-column: span 2;
-      font-size: 0.75rem;
+      position: absolute;
+      bottom: -18px; /* Float alert inside the margin space below results-grid */
+      left: 0;
+      right: 0;
+      font-size: 0.72rem;
       color: var(--user-color);
       text-align: center;
       font-style: italic;
-      margin-top: -8px;
+      white-space: nowrap;
+      pointer-events: none;
     }
 
     /* Visual slider segment */
@@ -813,7 +818,7 @@
       }
 
       .results-grid {
-        margin-bottom: 16px;
+        margin-bottom: 24px; /* Maintain 24px on mobile to prevent overlapping absolute cap-alert */
         gap: 12px;
       }
 
@@ -1131,6 +1136,21 @@
       return Math.max(0, dailyCap - usedToday);
     }
 
+    function updateCapAlert(price, rawGovShare, remainingPool) {
+      const singleCapReached = rawGovShare > remainingPool || (rawGovShare === remainingPool && remainingPool > 0);
+      if (price > 0 && singleCapReached) {
+        const extraPay = rawGovShare - remainingPool;
+        if (extraPay > 0.005) {
+          capAlert.innerHTML = `* Government cap reached! You pay an extra ${formatCurrency(extraPay)} on top.`;
+        } else {
+          capAlert.innerHTML = `* Government cap reached! You pay the rest on top.`;
+        }
+        capAlert.style.display = 'block';
+      } else {
+        capAlert.style.display = 'none';
+      }
+    }
+
     function calculateFromPrice() {
       const price = parseFloat(priceInput.value) || 0;
       const remainingPool = getRemainingSubsidy();
@@ -1141,8 +1161,7 @@
       valGov.value = price > 0 ? actualGovShare.toFixed(2) : '';
       valUser.value = price > 0 ? actualUserShare.toFixed(2) : '';
 
-      const singleCapReached = rawGovShare > remainingPool;
-      capAlert.style.display = (price > 0 && singleCapReached) ? 'block' : 'none';
+      updateCapAlert(price, rawGovShare, remainingPool);
     }
 
     function calculateFromGov() {
@@ -1161,8 +1180,7 @@
       valUser.value = gov > 0 ? user.toFixed(2) : '';
 
       const rawGov = price * (ratioGov / 100);
-      const singleCapReached = rawGov > remainingPool || gov === remainingPool;
-      capAlert.style.display = (gov > 0 && singleCapReached) ? 'block' : 'none';
+      updateCapAlert(price, rawGov, remainingPool);
     }
 
     function calculateFromUser() {
@@ -1186,8 +1204,7 @@
       valGov.value = user > 0 ? gov.toFixed(2) : '';
 
       const rawGov = price * (ratioGov / 100);
-      const singleCapReached = rawGov > remainingPool;
-      capAlert.style.display = (user > 0 && singleCapReached) ? 'block' : 'none';
+      updateCapAlert(price, rawGov, remainingPool);
     }
 
     function updateTrackers() {
