@@ -32,7 +32,7 @@
   <meta name="apple-mobile-web-app-title" content="HalfHalf">
   <link rel="apple-touch-icon" href="icon-solid.png">
   <!-- Lucide Icons (CDN) -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@0.469.0"></script>
   <style>
     :root {
       --bg-color: #f5f5f7; /* Softer, warmer light gray background */
@@ -1099,11 +1099,62 @@
     }
 
     // App State
-    let logs = JSON.parse(localStorage.getItem('halfhalf_logs')) || [];
+    // All money is handled as integer satang (1/100 baht) to avoid float drift.
     const ratioGov = 60; // Fixed 60%
     const ratioUser = 40; // Fixed 40%
-    let dailyCap = parseFloat(localStorage.getItem('halfhalf_daily_cap')) || 200.00;
+    const MAX_SATANG = 99999999; // ฿999,999.99
+
+    function loadJSON(key, fallback) {
+      try {
+        const v = JSON.parse(localStorage.getItem(key));
+        return v ?? fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function dayKey(ts) {
+      const d = new Date(ts);
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    }
+
+    // Normalize stored logs: legacy entries held baht floats and only a time string.
+    // `id` was always Date.now(), so it doubles as the timestamp.
+    let logs = loadJSON('halfhalf_logs', []);
+    if (!Array.isArray(logs)) logs = [];
+    logs = logs.filter(l => l && typeof l.id === 'number').map(l => ({
+      ...l,
+      ts: l.ts || l.id,
+      price: Number(l.price) || 0,
+      govShare: Number(l.govShare) || 0,
+      userShare: Number(l.userShare) || 0,
+      note: typeof l.note === 'string' ? l.note : ''
+    }));
+
+    // Daily subsidy allowance in satang
+    let dailyCap = toSatang(localStorage.getItem('halfhalf_daily_cap') || '200');
     let isCalculating = false;
+
+    function toSatang(value) {
+      const n = parseFloat(value);
+      return Number.isFinite(n) ? Math.round(n * 100) : 0;
+    }
+
+    function fromSatang(satang) {
+      return (satang / 100).toFixed(2);
+    }
+
+    // Keep only digits and one dot, max 2 decimals, bounded length
+    function sanitizeAmount(input) {
+      let v = input.value.replace(/[^\d.]/g, '');
+      const dot = v.indexOf('.');
+      if (dot !== -1) {
+        v = v.slice(0, dot + 1) + v.slice(dot + 1).replace(/\./g, '').slice(0, 2);
+      }
+      const intPart = (dot === -1 ? v : v.slice(0, dot)).replace(/^0+(?=\d)/, '').slice(0, 6);
+      v = dot === -1 ? intPart : (intPart || '0') + v.slice(dot);
+      if (v !== input.value) input.value = v;
+    }
 
     // Elements
     const priceInput = document.getElementById('original-price');
@@ -1125,45 +1176,37 @@
     const capAlert = document.getElementById('cap-alert');
 
     // Event Listeners
-    priceInput.addEventListener('input', () => {
-      if (isCalculating) return;
-      isCalculating = true;
+    function onAmountInput(input, calc) {
+      input.addEventListener('input', () => {
+        sanitizeAmount(input);
+        if (isCalculating) return;
+        isCalculating = true;
+        calc();
+        isCalculating = false;
+      });
+    }
+
+    onAmountInput(priceInput, calculateFromPrice);
+    onAmountInput(valGov, calculateFromGov);
+    onAmountInput(valUser, calculateFromUser);
+
+    // Editing the remaining subsidy adjusts today's allowance. The new cap is only
+    // persisted on commit so half-typed values never get saved.
+    onAmountInput(remainingSubsidyInput, () => {
+      dailyCap = toSatang(remainingSubsidyInput.value) + getUsedToday();
       calculateFromPrice();
-      isCalculating = false;
-    });
-
-    valGov.addEventListener('input', () => {
-      if (isCalculating) return;
-      isCalculating = true;
-      calculateFromGov();
-      isCalculating = false;
-    });
-
-    valUser.addEventListener('input', () => {
-      if (isCalculating) return;
-      isCalculating = true;
-      calculateFromUser();
-      isCalculating = false;
-    });
-
-    remainingSubsidyInput.addEventListener('input', () => {
-      const remainingVal = parseFloat(remainingSubsidyInput.value) || 0;
-      const usedToday = logs.reduce((sum, item) => sum + item.govShare, 0);
-      dailyCap = remainingVal + usedToday;
-      localStorage.setItem('halfhalf_daily_cap', dailyCap.toString());
-      
-      isCalculating = true;
-      calculateFromPrice();
-      isCalculating = false;
-
       updateTrackers();
     });
 
-    remainingSubsidyInput.addEventListener('blur', () => {
+    function commitSubsidy() {
+      localStorage.setItem('halfhalf_daily_cap', fromSatang(dailyCap));
       updateTrackers();
+    }
+
+    remainingSubsidyInput.addEventListener('blur', commitSubsidy);
+    remainingSubsidyInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') remainingSubsidyInput.blur();
     });
-
-
 
     // Drawer Event Listeners
     drawerOpenBtn.addEventListener('click', () => {
@@ -1174,20 +1217,29 @@
       historyDrawer.classList.remove('open');
     });
 
+    function getUsedToday() {
+      const today = dayKey(Date.now());
+      return logs
+        .filter(item => dayKey(item.ts) === today)
+        .reduce((sum, item) => sum + toSatang(item.govShare), 0);
+    }
+
     function getRemainingSubsidy() {
-      const usedToday = logs.reduce((sum, item) => sum + item.govShare, 0);
-      return Math.max(0, dailyCap - usedToday);
+      return Math.max(0, dailyCap - getUsedToday());
+    }
+
+    function setFields(price, gov, user) {
+      priceInput.value = price > 0 ? fromSatang(price) : '';
+      valGov.value = price > 0 ? fromSatang(gov) : '';
+      valUser.value = price > 0 ? fromSatang(user) : '';
     }
 
     function updateCapAlert(price, rawGovShare, remainingPool) {
-      const singleCapReached = rawGovShare > remainingPool || (rawGovShare === remainingPool && remainingPool > 0);
-      if (price > 0 && singleCapReached) {
+      if (price > 0 && (rawGovShare > remainingPool || (rawGovShare === remainingPool && remainingPool > 0))) {
         const extraPay = rawGovShare - remainingPool;
-        if (extraPay > 0.005) {
-          capAlert.innerHTML = `* Government cap reached! You pay an extra ${formatCurrency(extraPay)} on top.`;
-        } else {
-          capAlert.innerHTML = `* Government cap reached! You pay the rest on top.`;
-        }
+        capAlert.textContent = extraPay >= 1
+          ? `* Government cap reached! You pay an extra ${formatCurrency(extraPay)} on top.`
+          : `* Government cap reached! You pay the rest on top.`;
         capAlert.style.display = 'block';
       } else {
         capAlert.style.display = 'none';
@@ -1195,73 +1247,59 @@
     }
 
     function calculateFromPrice() {
-      const price = parseFloat(priceInput.value) || 0;
-      const remainingPool = getRemainingSubsidy();
-      const rawGovShare = price * (ratioGov / 100);
-      const actualGovShare = Math.min(rawGovShare, remainingPool);
-      const actualUserShare = price - actualGovShare;
+      const price = toSatang(priceInput.value);
+      const remaining = getRemainingSubsidy();
+      const rawGov = Math.round(price * ratioGov / 100);
+      const gov = Math.min(rawGov, remaining);
 
-      valGov.value = price > 0 ? actualGovShare.toFixed(2) : '';
-      valUser.value = price > 0 ? actualUserShare.toFixed(2) : '';
-
-      updateCapAlert(price, rawGovShare, remainingPool);
+      setFields(price, gov, price - gov);
+      updateCapAlert(price, rawGov, remaining);
     }
 
     function calculateFromGov() {
-      let gov = parseFloat(valGov.value) || 0;
-      const remainingPool = getRemainingSubsidy();
+      const remaining = getRemainingSubsidy();
+      let gov = toSatang(valGov.value);
 
-      if (gov > remainingPool) {
-        gov = remainingPool;
-        valGov.value = gov.toFixed(2);
+      if (gov > remaining) {
+        gov = remaining;
+        valGov.value = fromSatang(gov);
       }
 
-      const price = gov / (ratioGov / 100);
-      const user = price * (ratioUser / 100);
-
-      priceInput.value = gov > 0 ? price.toFixed(2) : '';
-      valUser.value = gov > 0 ? user.toFixed(2) : '';
-
-      const rawGov = price * (ratioGov / 100);
-      updateCapAlert(price, rawGov, remainingPool);
+      const price = Math.round(gov * 100 / ratioGov);
+      setFields(price, gov, price - gov);
+      updateCapAlert(price, Math.round(price * ratioGov / 100), remaining);
     }
 
     function calculateFromUser() {
-      const user = parseFloat(valUser.value) || 0;
-      const remainingPool = getRemainingSubsidy();
+      const user = toSatang(valUser.value);
+      const remaining = getRemainingSubsidy();
+      const userAtCap = Math.round(remaining * ratioUser / ratioGov);
 
-      let price = 0;
-      let gov = 0;
-
-      const userShareAtCap = remainingPool * (ratioUser / ratioGov);
-
-      if (user > userShareAtCap) {
-        price = user + remainingPool;
-        gov = remainingPool;
+      let price, gov;
+      if (user > userAtCap) {
+        gov = remaining;
+        price = user + gov;
       } else {
-        price = user / (ratioUser / 100);
-        gov = price * (ratioGov / 100);
+        price = Math.round(user * 100 / ratioUser);
+        gov = price - user;
       }
 
-      priceInput.value = user > 0 ? price.toFixed(2) : '';
-      valGov.value = user > 0 ? gov.toFixed(2) : '';
-
-      const rawGov = price * (ratioGov / 100);
-      updateCapAlert(price, rawGov, remainingPool);
+      setFields(price, gov, user);
+      updateCapAlert(price, Math.round(price * ratioGov / 100), remaining);
     }
 
     function updateTrackers() {
       const remaining = getRemainingSubsidy();
       if (document.activeElement !== remainingSubsidyInput) {
-        remainingSubsidyInput.value = remaining.toFixed(2);
+        remainingSubsidyInput.value = fromSatang(remaining);
       }
 
-      const optimal = remaining / (ratioGov / 100);
-      optimalLimitVal.innerText = formatCurrency(optimal);
+      optimalLimitVal.innerText = formatCurrency(Math.round(remaining * 100 / ratioGov));
     }
 
+    // amount is in satang
     function formatCurrency(amount) {
-      return '฿' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return '฿' + (amount / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function resetCalculator() {
@@ -1273,32 +1311,39 @@
     }
 
     function saveCalculation() {
-      const price = parseFloat(priceInput.value);
-      if (isNaN(price) || price <= 0) return;
+      const price = toSatang(priceInput.value);
+      if (price <= 0) return;
 
-      const govShare = parseFloat(valGov.value) || 0;
-      const userShare = parseFloat(valUser.value) || 0;
-      const note = '';
+      const govShare = toSatang(valGov.value);
+      const now = Date.now();
 
-      const logEntry = {
-        id: Date.now(),
-        price: price,
-        govShare: govShare,
-        userShare: userShare,
+      // Money fields are stored as baht numbers (2dp) for CSV/back-compat.
+      logs.unshift({
+        id: now,
+        ts: now,
+        price: price / 100,
+        govShare: govShare / 100,
+        userShare: (price - govShare) / 100,
         ratioGov: ratioGov,
         ratioUser: ratioUser,
-        note: note || `Expense Split`,
-        date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      logs.unshift(logEntry);
-      localStorage.setItem('halfhalf_logs', JSON.stringify(logs));
+        note: 'Expense Split',
+        date: new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      persistLogs();
       resetCalculator();
       renderHistory();
       updateTrackers();
-      
+
       // Auto open history drawer
       historyDrawer.classList.add('open');
+    }
+
+    function persistLogs() {
+      try {
+        localStorage.setItem('halfhalf_logs', JSON.stringify(logs));
+      } catch (e) {
+        console.warn('Could not save logs:', e);
+      }
     }
 
     // Numpad Logic
@@ -1322,24 +1367,6 @@
         activeInput = item.input;
         numericInputs.forEach(x => x.wrapper.classList.remove('active-field'));
         item.wrapper.classList.add('active-field');
-      });
-
-      // Desktop keyboard validation to prevent letters
-      item.input.addEventListener('keydown', (e) => {
-        if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
-            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
-            (e.keyCode === 67 && (e.ctrlKey === true || e.metaKey === true)) ||
-            (e.keyCode === 86 && (e.ctrlKey === true || e.metaKey === true)) ||
-            (e.keyCode === 88 && (e.ctrlKey === true || e.metaKey === true)) ||
-            (e.keyCode >= 35 && e.keyCode <= 39)) {
-          if ((e.keyCode === 190 || e.keyCode === 110) && item.input.value.includes('.')) {
-            e.preventDefault();
-          }
-          return;
-        }
-        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-          e.preventDefault();
-        }
       });
     });
 
@@ -1382,7 +1409,7 @@
 
     function deleteLog(id) {
       logs = logs.filter(log => log.id !== id);
-      localStorage.setItem('halfhalf_logs', JSON.stringify(logs));
+      persistLogs();
       renderHistory();
       updateTrackers();
       
@@ -1394,7 +1421,7 @@
     function clearAllLogs() {
       if (confirm('Clear all history?')) {
         logs = [];
-        localStorage.setItem('halfhalf_logs', JSON.stringify(logs));
+        persistLogs();
         renderHistory();
         updateTrackers();
         resetCalculator();
@@ -1405,6 +1432,7 @@
       const query = searchInput.value.toLowerCase();
       const filtered = logs.filter(log => 
         log.note.toLowerCase().includes(query) || 
+        fmtLogDate(log.ts).toLowerCase().includes(query) ||
         log.price.toString().includes(query)
       );
 
@@ -1428,15 +1456,15 @@
       historyList.innerHTML = filtered.map(log => `
         <div class="log-item">
           <div class="log-left">
-            <span class="log-orig-price">${formatCurrency(log.price)}</span>
+            <span class="log-orig-price">${formatCurrency(toSatang(log.price))}</span>
             <div class="log-splits">
-              <span>Gov (${log.ratioGov}%): ${formatCurrency(log.govShare)}</span>
-              <span>You (${log.ratioUser}%): ${formatCurrency(log.userShare)}</span>
+              <span>Gov (${log.ratioGov}%): ${formatCurrency(toSatang(log.govShare))}</span>
+              <span>You (${log.ratioUser}%): ${formatCurrency(toSatang(log.userShare))}</span>
             </div>
             ${log.note ? `<div class="log-note">${escapeHTML(log.note)}</div>` : ''}
           </div>
           <div class="log-right">
-            <span class="log-date">${log.date}</span>
+            <span class="log-date">${fmtLogDate(log.ts)}</span>
             <button class="log-delete" onclick="deleteLog(${log.id})" title="Delete">
               <i data-lucide="x-circle" style="width: 14px; height: 14px;"></i>
             </button>
@@ -1447,6 +1475,14 @@
       lucide.createIcons();
     }
 
+    function fmtLogDate(ts) {
+      const d = new Date(ts);
+      const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return dayKey(ts) === dayKey(Date.now())
+        ? time
+        : `${d.toLocaleDateString([], { day: 'numeric', month: 'short' })} ${time}`;
+    }
+
     function escapeHTML(str) {
       return str.replace(/[&<>'"]/g, 
         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
@@ -1455,24 +1491,21 @@
 
     function exportToCSV() {
       if (logs.length === 0) return;
-      let csvContent = "data:text/csv;charset=utf-8,Date,Original Price,Government Share,User Share,Gov Ratio,User Ratio,Label/Note\n";
+      let csvContent = "data:text/csv;charset=utf-8,Timestamp,Original Price,Government Share,User Share,Gov Ratio,User Ratio,Label/Note\n";
       logs.forEach(log => {
         const escapedNote = log.note.replace(/"/g, '""');
-        csvContent += `"${log.date}",${log.price.toFixed(2)},${log.govShare.toFixed(2)},${log.userShare.toFixed(2)},${log.ratioGov},${log.ratioUser},"${escapedNote}"\n`;
+        const stamp = new Date(log.ts).toISOString();
+        csvContent += `"${stamp}",${log.price.toFixed(2)},${log.govShare.toFixed(2)},${log.userShare.toFixed(2)},${log.ratioGov},${log.ratioUser},"${escapedNote}"\n`;
       });
 
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `co_pay_split_nordic_${Date.now()}.csv`);
+      link.setAttribute("download", `halfhalf_${Date.now()}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
-
-    // Initialize trackers
-    updateTrackers();
-    renderHistory();
 
     // Theme toggle interaction
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
