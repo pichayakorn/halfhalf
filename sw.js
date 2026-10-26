@@ -1,23 +1,25 @@
-const CACHE_NAME = 'halfhalf-cache-1.1.0';
+const CACHE_NAME = 'halfhalf-cache-1.2.0';
 const LOCAL_ASSETS = [
   './',
   './index.html',
+  './style.css',
+  './calc.js',
+  './app.js',
+  './fonts/inter-latin.woff2',
+  './fonts/instrument-serif-latin.woff2',
   './icon.svg',
   './icon-solid.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   './manifest.json'
 ];
-const EXTERNAL_ASSETS = [
-  'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap',
-  'https://unpkg.com/lucide@0.469.0'
-];
 
-// Install Event: local shell is required, external assets are best-effort
+// Install Event: everything is same-origin now, so precache the whole shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      await cache.addAll(LOCAL_ASSETS);
-      await Promise.allSettled(EXTERNAL_ASSETS.map((url) => cache.add(url)));
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(LOCAL_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -40,36 +42,19 @@ function cacheResponse(request, response) {
   return response;
 }
 
+// Same-origin only: network first so deploys show up immediately, cache when offline
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  if (request.method !== 'GET') return;
+  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
 
-  const url = new URL(request.url);
-
-  if (url.origin === self.location.origin) {
-    // Same-origin: network first so deploys show up immediately, cache when offline
-    event.respondWith(
-      fetch(request)
-        .then((response) => cacheResponse(request, response))
-        .catch(async () => {
-          const cached = await caches.match(request, { ignoreSearch: true });
-          if (cached) return cached;
-          if (request.mode === 'navigate') return caches.match('./index.html');
-          return Response.error();
-        })
-    );
-    return;
-  }
-
-  // Cross-origin (fonts, Lucide): cache first, refresh in the background
   event.respondWith(
-    caches.match(request).then((cached) => {
-      const network = fetch(request).then((response) => cacheResponse(request, response));
-      if (cached) {
-        network.catch(() => {});
-        return cached;
-      }
-      return network;
-    })
+    fetch(request)
+      .then((response) => cacheResponse(request, response))
+      .catch(async () => {
+        const cached = await caches.match(request, { ignoreSearch: true });
+        if (cached) return cached;
+        if (request.mode === 'navigate') return caches.match('./index.html');
+        return Response.error();
+      })
   );
 });

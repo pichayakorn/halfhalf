@@ -12,15 +12,17 @@ It simplifies co-payment splits where the government covers **60%** and you pay 
 - **No-Scroll Mobile Design:** Specifically optimized to fit fully on smartphone screens without vertical page scrolling.
 - **Logs Archive Drawer:** Review saved calculations, search entries, or clear history in a sleek sliding menu drawer.
 - **Export to CSV:** Download your calculation history to a spreadsheet file.
-- **Full Offline PWA:** Fully installable on your device's home screen and functions completely offline via service worker caches.
+- **Daily Reset:** Only today's records count against the subsidy cap, so it refreshes every day.
+- **Light & Dark Themes:** Follows your system setting, with a manual toggle.
+- **Full Offline PWA:** Fully installable on your device's home screen and functions completely offline via service worker caches. No third-party requests: fonts and icons are bundled.
 - **Persistent Storage:** Your calculations archive and daily cap changes are saved locally to `localStorage` so they persist across page refreshes.
 
 ## Technologies Used
 
-- **HTML5 & CSS3:** Semantics and custom variables tailored for a Nordic Light theme.
-- **Vanilla JavaScript:** Reactive computations, service worker lifecycle, and localStorage management.
-- **Lucide Icons:** SVG icons loaded dynamically via CDN.
-- **Google Fonts:** Inter & Instrument Serif.
+- **HTML5 & CSS3:** Semantics and custom variables for light and dark themes.
+- **Vanilla JavaScript:** `calc.js` holds the pure split logic (integer satang, unit tested); `app.js` handles the UI, service worker registration and localStorage.
+- **Lucide Icons:** Inlined as an SVG sprite in `index.html` (ISC license).
+- **Fonts:** Inter & Instrument Serif, self-hosted in `fonts/`.
 
 ## Running Locally
 
@@ -28,6 +30,14 @@ To host this locally:
 1. Clone or download this folder.
 2. Spin up any simple HTTP server (e.g. `npx http-server`).
 3. Open `http://localhost:8080` in your browser.
+
+## Tests
+
+The calculation logic is covered by Node's built-in test runner (Node 18+, no dependencies):
+
+```sh
+npm test
+```
 
 ## Author
 
