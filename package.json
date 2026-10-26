@@ -3,7 +3,7 @@
   "private": true,
   "description": "60/40 co-pay splitter PWA",
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test"
   },
   "license": "MIT"
 }
